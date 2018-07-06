@@ -1,6 +1,9 @@
 <?php
+header('Access-Control-Allow-Origin: *');
 
 
+// echo 6371 * acos( cos( deg2rad($lat) ) * cos( deg2rad( $lat ) ) * cos( deg2rad( $lng +(10.8344428-10.788660625975)/5 ) - deg2rad($lng) ) + sin( deg2rad($lat) ) * sin( deg2rad( $lat ) ) );
+// die();
 // echo 'ya = '. (deg2rad (106.6890693) -acos((cos(5/6371) - sin( deg2rad (10.8307826) ) * sin( deg2rad ( 10.8307826 ) ))/(cos( deg2rad (10.8307826) ) * cos( deg2rad ( 10.8307826 ) ))))*57.29578;
 // echo '<br>';
 // echo 'x= 106.6890693'.'<br>';
@@ -10,26 +13,28 @@
 // echo '<br>';
 // echo  6371 * acos( cos( deg2rad(10.8307826) ) * cos( deg2rad(10.8307826 ) ) * cos( deg2rad( 106.73485182108 ) - deg2rad(106.6890693) ) + sin( deg2rad(10.8307826) ) * sin( deg2rad(10.8307826 ) ) ) ;
 
-$x = 10.8307685;
-$y =106.68906249999999;
-echo $ya = (deg2rad ($y) -acos((cos(5/6371) - sin( deg2rad ($x) ) * sin( deg2rad ( $x ) ))/(cos( deg2rad ($x) ) * cos( deg2rad ( $x ) ))))*57.29578;
-echo '<br>';
-echo $yb = (deg2rad ($y) + acos((cos(5/6371) - sin( deg2rad ($x) ) * sin( deg2rad ( $x ) ))/(cos( deg2rad ($x) ) * cos( deg2rad ( $x ) ))))*57.29578;
-echo '<br>';
+// $x = 10.8344428;
+// $y =106.6873212;
 
-echo "<br>";
-echo $xc = $x - sqrt(-($ya - $y)*($yb - $y));
-echo "<br>";
-echo  $xd = sqrt(-($ya - $y)*($yb - $y))+$x ;
- echo "<br>";
- echo 'toa do A('.$x.' ; '.$ya.')';
-echo "<br>";
- echo 'toa do B('.$x.' ; '.$yb.')';
- echo "<br>";
- echo 'toa do C('.$xc.' ; '.$y.')';
- echo "<br>";
- echo 'toa do D('.$xd.' ; '.$y.')';
- echo "<br>";
+
+
+// echo '<br>';
+// echo $ya = (deg2rad ($y) -acos((cos(5/6371) - sin( deg2rad ($x) ) * sin( deg2rad ( $x ) ))/(cos( deg2rad ($x) ) * cos( deg2rad ( $x ) ))))*57.29578;
+// echo '<br>';
+// echo $yb = (deg2rad ($y) + acos((cos(5/6371) - sin( deg2rad ($x) ) * sin( deg2rad ( $x ) ))/(cos( deg2rad ($x) ) * cos( deg2rad ( $x ) ))))*57.29578;
+// echo '<br>';
+// echo $xc = $x - sqrt(-($ya - $y)*($yb - $y));
+// echo "<br>";
+// echo  $xd = sqrt(-($ya - $y)*($yb - $y))+$x ;
+//  echo "<br>";
+//  echo 'toa do A('.$x.' ; '.$ya.')';
+// echo "<br>";
+//  echo 'toa do B('.$x.' ; '.$yb.')';
+//  echo "<br>";
+//  echo 'toa do C('.$xc.' ; '.$y.')';
+//  echo "<br>";
+//  echo 'toa do D('.$xd.' ; '.$y.')';
+//  echo "<br>";
  
 
 
@@ -116,7 +121,7 @@ echo "<br>";
   
             $latlng =  $.ajax({
                   type:'POST',
-                  url:'getLocation.php',
+                  url:'getPointAround.php',
                   async : false,
                   data:'lat='+pos.lat+'&lng='+pos.lng,
               });
@@ -124,8 +129,8 @@ echo "<br>";
             $latlng.then((data)=>{
 
               var point = JSON.parse(data);
-			  console.log(point);
-              console.log(point.length);
+		           // console.log(point);
+             //  console.log(point.length);
                var arr = [];
                var origin = pos;
                for (var i =0; i < point.length; i++) {
@@ -152,16 +157,40 @@ echo "<br>";
 
                   } else {
               var originList = response.originAddresses;
-              var destinationList = response.destinationAddresses;
+              //var destinationList = response.destinationAddresses;
               var outputDiv = document.getElementById('output');
               outputDiv.innerHTML = '';
-              deleteMarkers(markersArray);
+            
 
+                var destinationList = response.destinationAddresses;
+               // console.log(JSON.stringify(response.rows[0].elements[0]));return;
+                 let ds_point  = [];
+                 let ds_dis    = [];
+                 var results   = response.rows[0].elements;
+                
+                for (let i =0; i < results.length; i++  ) {
+                  for (let j =0; j < results.length; j++  ) {
+                      for (let j =0; j < results.length; j++  ) {
+                  ds_dis.push(results[i].distance.value);
+                  ds_point.push({
+                    langt :arr[i],
+                    address:destinationList[i],
+                    distance:results[i].distance,
+                    duration:results[i].duration
+                  })
+                  }
+                }
+                }
+                var ds_sort_new = ds_point.sort(function(a,b){
+                  return a.distance.value - b.distance.value 
+                })
+                console.log(ds_sort_new);return;
+     
               var showGeocodedAddressOnMap = function(asDestination) {
                 var icon = asDestination ? destinationIcon : originIcon;
                   return function(results, status) {
                     if (status === 'OK') {
-                      console.log(JSON.stringify(results));
+                     // console.log(JSON.stringify(results));
                       return;
                       map.fitBounds(bounds.extend(results[0].geometry.location));
                       markersArray.push(new google.maps.Marker({

@@ -1,6 +1,7 @@
 <?php
 include('database/function_data.php');
 include('database/data.php');
+define('DISTANCE_1KM', 0.0091564348049999);
 
 
 if(!empty($_POST['lat']) && !empty($_POST['lng'])){
@@ -19,26 +20,32 @@ if(!empty($_POST['lat']) && !empty($_POST['lng'])){
     // //Print address 
     // //echo $location;
 
-    $lat = $_POST['lat'];
-    $lng = $_POST['lng'];
+    // $lat = $_POST['lat'];
+    // $lng = $_POST['lng'];
     
     
     $x = $_POST['lat'];
     $y = $_POST['lng'];
 
-     $ya = (deg2rad ($y) -acos((cos(6/6371) - sin( deg2rad ($x) ) * sin( deg2rad ( $x ) ))/(cos( deg2rad ($x) ) * cos( deg2rad ( $x ) ))))*57.29578;
-     '<br>';
-     $yb = (deg2rad ($y) + acos((cos(6/6371) - sin( deg2rad ($x) ) * sin( deg2rad ( $x ) ))/(cos( deg2rad ($x) ) * cos( deg2rad ( $x ) ))))*57.29578;
-     '<br>';
+     // $ya = (deg2rad ($y) -acos((cos(6/6371) - sin( deg2rad ($x) ) * sin( deg2rad ( $x ) ))/(cos( deg2rad ($x) ) * cos( deg2rad ( $x ) ))))*57.29578;
+     
+     // $yb = (deg2rad ($y) + acos((cos(6/6371) - sin( deg2rad ($x) ) * sin( deg2rad ( $x ) ))/(cos( deg2rad ($x) ) * cos( deg2rad ( $x ) ))))*57.29578;
+    
+     // $xc = $x - sqrt(-($ya - $y)*($yb - $y));
+     
+     //  $xd = sqrt(-($ya - $y)*($yb - $y))+$x ;
 
-     "<br>";
-     $xc = $x - sqrt(-($ya - $y)*($yb - $y));
-     "<br>";
-      $xd = sqrt(-($ya - $y)*($yb - $y))+$x ;
+       $xc = $x-DISTANCE_1KM*6;
+      
+       $xd = $x+DISTANCE_1KM*6;
+      
+       $ya = $y-DISTANCE_1KM*6;
+       
+       $yb = $y+DISTANCE_1KM*6; 
 
-   echo  $query = "SELECT `id`,`lat`,`lng` FROM markers WHERE `lat` BETWEEN $xc AND $xd AND `lng` BETWEEN $ya AND $yb  LIMIT 0 , 20";
-die();
-    // echo $query =  "SELECT id,`lat`,`lng`, 
+     $query = "SELECT `id`,`lat`,`lng` FROM tbl_shops WHERE `lat` BETWEEN $xc AND $xd AND `lng` BETWEEN $ya AND $yb  LIMIT 0 , 20";
+
+    //  $query =  "SELECT id,`lat`,`lng`, 
     // ( 6371 * acos( cos( radians($lat) ) * cos( radians( lat ) ) * cos( radians( lng ) - radians($lng) ) + sin( radians($lat) ) * sin( radians( lat ) ) ) )
     //   AS distance FROM markers HAVING distance < 5 ORDER BY distance LIMIT 0 , 20";
     
