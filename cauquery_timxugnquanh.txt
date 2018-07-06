@@ -1,0 +1,5 @@
+SELECT id, ( 6371 * acos( cos( radians(10.832291) ) * cos( radians( lat ) ) * cos( radians( lng ) - radians(106.689060) )
+ + sin( radians(10.832291) ) * sin( radians( lat ) ) ) ) AS distance FROM markers HAVING distance < 25 ORDER BY distance LIMIT 0 , 20
+ //
+ 10.832291 vĩ độ cua bạn
+ 106.689060 kinh độ của bạn
